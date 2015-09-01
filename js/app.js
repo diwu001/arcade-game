@@ -22,9 +22,9 @@ function enemyInitialY() {
     return Math.round((2 * Math.random() + 1));
 } 
 
-// Set speed in the range of 2 and 5
+// Set speed in the range of 2 and 4
 function randomSpeed() {
-    return Math.random() * 3 + 2;
+    return Math.random() * 3 + 1;
 } 
 
 // Set direction to 1 or -1
@@ -32,9 +32,7 @@ function randomDirection() {
     return Math.round(Math.random()) * 2 - 1;
 } 
 
-/* Define Enemies class
- * This class requires a render() and a handleInput() method.
- */
+// Define Enemies class
 var Enemy = function() {
     // Set the enemy direction to be random
     this.direction = randomDirection(); 
@@ -71,13 +69,11 @@ Enemy.prototype.update = function(dt) {
 
 // Draw the enemy on the screen, required method for game
 Enemy.prototype.render = function() {
-    ctx.drawImage(Resources.get(this.sprite), this.x * 101, this.y * 84 - 25); //scaling the grid to the graphics
+    ctx.drawImage(Resources.get(this.sprite), this.x * 101, this.y * 84 - 25); 
 };
 
 
-/* Defince player class
- * This class requires an update(), render() and a handleInput() method.
- */
+// Defince player class
 var Player = function(){
     // Initialize a player object using Enemy class
     Enemy.call(this); 
@@ -138,13 +134,11 @@ Player.prototype.update = function() {
     if(lives == 0) {
         player = new Player(); 
         game.end();
-    }  
+    }    
 };
 
 
-/* Define Game Class 
- * This class requires an end() and a handleInput() method.
- */
+// Define Game Class 
 var Game = function(enemyNumbers, first) {
     // first is true if it's the first time for user to play the game
     this.first = first;
@@ -182,6 +176,10 @@ Game.prototype.handleInput = function(key) {
         // Set first to be false, if it's not the first time to play the game
         if (game.first) {
             game.first = false;
+            // Reset collectives to random values
+            for (var i = 0; i < numCollectives; i++){ 
+                allCollectives[i].reset();
+            }           
         }
         
         /* If game is over, restart the game and set first to be false. 
@@ -189,8 +187,55 @@ Game.prototype.handleInput = function(key) {
          */ 
         if (game.over) {
             game = new Game(numEnemies, false);
+            // Reset collectives to random values
+            for (var i = 0; i < numCollectives; i++){ 
+                allCollectives[i].reset();
+            }  
         } 
     }
+};
+
+
+// Defince Collective Class
+var Collective = function() {
+    // Initialize a collective object using Enemy class
+    Enemy.call(this); 
+    // Initially Collective is placed out of canvas
+    this.x = -1;
+    this.y = -1; 
+};
+
+// Inherience from Enemy class
+Collective.prototype = Object.create(Enemy.prototype); 
+Collective.prototype.constructor = Collective;
+
+// Reset x, y position and sprite of the collective
+Collective.prototype.reset = function() {
+    // Set x in the range of 0 to 4
+    this.x =  Math.round(4 * Math.random());
+    // Set y in the range of 1 to 3
+    this.y = Math.round((2 * Math.random() + 1));
+    
+    // Set a random image for the Collective
+    var randomImage = Math.round(Math.random() * 2) + 1;
+    switch(randomImage) {
+        case 1: this.sprite = 'images/Gem Blue.png'; break;
+        case 2: this.sprite = 'images/Gem Green.png'; break;
+        default: this.sprite = 'images/Gem Orange.png'; 
+    }
+};
+
+// Collect the collective
+Collective.prototype.collect = function() {  
+    if (Math.round(player.y) == this.y && Math.round(player.x) == this.x) {    
+        score++;
+        this.reset();
+    }
+};
+
+// Draw the collective on the screen
+Collective.prototype.render = function() {
+    ctx.drawImage(Resources.get(this.sprite), this.x * 101 + 8, this.y * 84 - 5); 
 };
 
 
@@ -217,15 +262,23 @@ document.addEventListener('keyup', function(e) {
 });
 
 
-/* Set a random number of enemies between 4 and 6.
- * Place all enemy objects in allEnemies array.
+/* Set a random number of enemies between 4 and 6. Place all enemy objects in allEnemies array.
+ * Place all collectives object in allCollectives array.
  * Place the player object in a variable called player.
  * Instantiate game object.
  */
 var numEnemies = Math.round(Math.random()) * 2 + 4;
-var game = new Game(numEnemies, true);
 var allEnemies = [];
 for (var i = 0; i < numEnemies; i++){ 
     allEnemies.push(new Enemy());
 }
+
+var allCollectives = [];
+var numCollectives = 2;
+for (var i = 0; i < numCollectives; i++) { 
+    allCollectives.push(new Collective());
+}
+
 var player = new Player();
+
+var game = new Game(numEnemies, true);

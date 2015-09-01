@@ -95,6 +95,9 @@ var Engine = (function(global) {
             enemy.update(dt);
         });
         player.update();
+        allCollectives.forEach(function(collective) {
+            collective.collect(dt);
+        });
     }
     
     /* This function is called by render(). It sets up the font, color and content 
@@ -190,6 +193,10 @@ var Engine = (function(global) {
         });
 
         player.render();
+        
+        allCollectives.forEach(function(collective) {
+            collective.render();
+        });
     }
 
     /* This function does nothing but it could have been a good place to
@@ -210,6 +217,9 @@ var Engine = (function(global) {
         'images/grass-block.png',
         'images/char-cat-girl.png',
         'images/Rock.png',
+        'images/Gem Blue.png',
+        'images/Gem Orange.png',
+        'images/Gem Green.png',
         'images/Heart.png',
     ]);
     Resources.onReady(init);
