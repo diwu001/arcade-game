@@ -96,6 +96,15 @@ var Engine = (function(global) {
         });
         player.update();
     }
+    
+    /* This function is called by render(). It sets up the font, color and content 
+     * of the text message to be shown on canvas
+     */
+    function scoreText(ctx, txt, font, color, x, y) {
+        ctx.font = font;
+        ctx.fillStyle = color;
+        ctx.fillText(txt, x, y);
+    }
 
     /* This function initially draws the "game level", it will then call
      * the renderEntities function. Remember, this function is called every
@@ -135,9 +144,37 @@ var Engine = (function(global) {
                 ctx.drawImage(Resources.get(rowImages[row]), col * 101, row * 83);
             }
         }
-
-
+        
         renderEntities();
+        
+        /* Render current score and lives on the top of the game board.
+         * Lives are displayed by the unicode of heart. 
+         */
+        ctx.clearRect(0, 0, 600, 50);
+        var livesStr = "Lives: ";
+        for(var k = 0; k < lives; k++) {
+            livesStr += "\u2764" + " ";    
+        }
+        scoreText(ctx, livesStr, "24px Arial", "red" , 90, 30);
+        scoreText(ctx, "Score: " + score, "24px Arial", "#1564C0", 280, 30);
+       
+        /* Render Gameover message on the game board.
+         * If game is over, clear up the current score and lives information of top of the game board. 
+         * Render total Score and restart message
+         */
+        if (game.over) {
+            ctx.clearRect(0, 0, 600, 50);
+            scoreText(ctx, "Game Over!  Total Score: " + score, '34px Arial', 'orange', 50, 110);
+            scoreText(ctx, "Press Space to Restart", '30px Arial', 'white', 100, 430);
+        }
+        
+        /* If it's the first time for the user to play the game,
+         * or if user pauses the game and game isn't over, 
+         * render start message.
+         */
+        else if (game.first || (!game.over && game.pause)) {
+            scoreText(ctx, "Press Space to Begin", '30px Arial', 'white', 110, 430);
+        }
     }
 
     /* This function is called by the render function and is called on each game
@@ -171,8 +208,9 @@ var Engine = (function(global) {
         'images/stone-block.png',
         'images/water-block.png',
         'images/grass-block.png',
-        'images/enemy-bug.png',
-        'images/char-boy.png'
+        'images/char-cat-girl.png',
+        'images/Rock.png',
+        'images/Heart.png',
     ]);
     Resources.onReady(init);
 

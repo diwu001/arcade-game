@@ -1,5 +1,10 @@
+"use strict"; //strict mode
+
 var gameWidth = 5; // width of the game canvas
 var gameHeight = 6; // height of the game canvas
+
+var score = 0; // Set initial value of score
+var lives = 3; // Set initial value of lives
 
 // Set x position
 function enemyInitialX(direction) { 
@@ -40,7 +45,7 @@ var Enemy = function() {
     // Set the initial speed
     this.speed = randomSpeed() * this.direction; 
     // The image/sprite for enemy
-    this.sprite = 'images/Bug.png'; 
+    this.sprite = 'images/Rock.png'; 
 };
 
 /* Update the enemy's position, required method for game
@@ -70,19 +75,129 @@ Enemy.prototype.render = function() {
 };
 
 
-// Now write your own player class
-// This class requires an update(), render() and
-// a handleInput() method.
+/* Defince player class
+ * This class requires an update(), render() and a handleInput() method.
+ */
+var Player = function(){
+    // Initialize a player object using Enemy class
+    Enemy.call(this); 
+    // Set image of the player
+    this.sprite = 'images/char-cat-girl.png'; 
+    // Set the initial x of the player
+    this.playerInitialX = 2; 
+    // Set the initial y of the player
+    this.playerInitialY = 5; 
+    // Set the current x of the player
+    this.x = this.playerInitialX;
+    // Set the current y of the player
+    this.y = this.playerInitialY;
+};
+
+// Inherience from Enemy class
+Player.prototype = Object.create(Enemy.prototype); 
+Player.prototype.constructor = Player; 
+
+// Handles direction key input and change the position of player
+Player.prototype.handleInput = function (input){ 
+    if (input == "up" && this.y > 0){
+        this.y = this.y - 1;
+    }
+    if (input == "left" && this.x > 0){
+        this.x = this.x - 1;
+    }
+    if (input == "right" && this.x < gameWidth - 1){
+        this.x = this.x + 1;
+    }
+    if (input == "down" && this.y < gameHeight - 1){
+        this.y = this.y + 1;
+    }
+};
+
+/* Update the player's status
+ * If the player successfully reaches the river, he gains a score.
+ * If the player hits an enemy, he loses a life.
+ * If the player loses all his lives, game is over.
+ */
+Player.prototype.update = function() {
+    if (this.y === 0) { 
+        score++;
+        this.x = this.playerInitialX;
+        this.y = this.playerInitialY;
+    }
+    
+    // Detect collision 
+    for (var enemy in allEnemies){
+        if (Math.round(allEnemies[enemy].y) == this.y && Math.round(allEnemies[enemy].x) == this.x) {    
+            lives--;
+            this.x = this.playerInitialX;
+            this.y = this.playerInitialY;
+            break;
+        }
+    }
+    
+    if(lives == 0) {
+        player = new Player(); 
+        game.end();
+    }  
+};
 
 
-// Now instantiate your objects.
-// Place all enemy objects in an array called allEnemies
-// Place the player object in a variable called player
+/* Define Game Class 
+ * This class requires an end() and a handleInput() method.
+ */
+var Game = function(enemyNumbers, first) {
+    // first is true if it's the first time for user to play the game
+    this.first = first;
+    
+    /* If it's the first time, game is paused.
+     * If it isn't the first time (Start a new game after previous game is over), set pause to be false
+     */
+    if(first) {
+        this.pause = true;
+    } else {
+        this.pause = false;
+    }
+    
+    // Sets the current state of the game to 'game over'
+    this.over = false;
+    
+    // Set the initial score to be 0. Set the initial lives to be 3.
+    score = 0;
+    lives = 3;
+
+};
+
+// If the game ends, the game is paused and the status is game over.
+Game.prototype.end = function() {
+    game.pause = true;
+    game.over = true;
+};
+
+// Handle "Space" key input.
+Game.prototype.handleInput = function(key) {
+    if(key == 'space') {
+        // Toggle between pause and unpause.
+        game.pause = !game.pause;
+        
+        // Set first to be false, if it's not the first time to play the game
+        if (game.first) {
+            game.first = false;
+        }
+        
+        /* If game is over, restart the game and set first to be false. 
+         * It will cause pause to be false, so the game is restarted.
+         */ 
+        if (game.over) {
+            game = new Game(numEnemies, false);
+        } 
+    }
+};
 
 
-
-// This listens for key presses and sends the keys to your
-// Player.handleInput() method. You don't need to modify this.
+/* This function listens for key presses.
+ * If key "Space" is pressed, it sends the key to Game.handleInput() method.
+ * If one of the direction key is pressed, it sends the key to Player.handleInput() method. 
+ */
 document.addEventListener('keyup', function(e) {
     var allowedKeys = {
         37: 'left',
@@ -90,6 +205,27 @@ document.addEventListener('keyup', function(e) {
         39: 'right',
         40: 'down'
     };
+    var controlKey = {
+        32: 'space'  
+    };
 
-    player.handleInput(allowedKeys[e.keyCode]);
+    if(e.keyCode == 32) {
+        game.handleInput(controlKey[e.keyCode]);
+    } else if(e.keyCode >= 37 && e.keyCode <= 40){
+        player.handleInput(allowedKeys[e.keyCode]);
+    }
 });
+
+
+/* Set a random number of enemies between 4 and 6.
+ * Place all enemy objects in allEnemies array.
+ * Place the player object in a variable called player.
+ * Instantiate game object.
+ */
+var numEnemies = Math.round(Math.random()) * 2 + 4;
+var game = new Game(numEnemies, true);
+var allEnemies = [];
+for (var i = 0; i < numEnemies; i++){ 
+    allEnemies.push(new Enemy());
+}
+var player = new Player();
