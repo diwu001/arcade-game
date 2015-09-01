@@ -154,12 +154,12 @@ var Engine = (function(global) {
          * Lives are displayed by the unicode of heart. 
          */
         ctx.clearRect(0, 0, 600, 50);
-        var livesStr = "Lives: ";
+        var livesStr = 'Lives: ';
         for(var k = 0; k < lives; k++) {
-            livesStr += "\u2764" + " ";    
+            livesStr += '\u2764' + ' ';    
         }
-        scoreText(ctx, livesStr, "24px Arial", "red" , 90, 30);
-        scoreText(ctx, "Score: " + score, "24px Arial", "#1564C0", 280, 30);
+        scoreText(ctx, livesStr, '24px Arial', 'orange' , 90, 30);
+        scoreText(ctx, 'Score: ' + score, '24px Arial', '#1564C0', 280, 30);
        
         /* Render Gameover message on the game board.
          * If game is over, clear up the current score and lives information of top of the game board. 
@@ -167,8 +167,8 @@ var Engine = (function(global) {
          */
         if (game.over) {
             ctx.clearRect(0, 0, 600, 50);
-            scoreText(ctx, "Game Over!  Total Score: " + score, '34px Arial', 'orange', 50, 110);
-            scoreText(ctx, "Press Space to Restart", '30px Arial', 'white', 100, 430);
+            scoreText(ctx, 'Game Over!  Total Score: ' + score, '34px Arial', 'orange', 50, 110);
+            scoreText(ctx, 'Press Space to Restart', '30px Arial', 'white', 100, 430);
         }
         
         /* If it's the first time for the user to play the game,
@@ -176,7 +176,7 @@ var Engine = (function(global) {
          * render start message.
          */
         else if (game.first || (!game.over && game.pause)) {
-            scoreText(ctx, "Press Space to Begin", '30px Arial', 'white', 110, 430);
+            scoreText(ctx, 'Press Space to Begin', '30px Arial', 'white', 110, 430);
         }
     }
 

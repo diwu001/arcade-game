@@ -1,4 +1,4 @@
-"use strict"; //strict mode
+'use strict'; //strict mode
 
 var gameWidth = 5; // width of the game canvas
 var gameHeight = 6; // height of the game canvas
@@ -9,17 +9,17 @@ var lives = 3; // Set initial value of lives
 // Set x position
 function enemyInitialX(direction) { 
     if(direction == 1) {
-        // Set initial x in the range of -3 and -1
+        // Set initial x in the range of column -3 and -1
         return Math.round(-1 - 2 * Math.random()); 
     } else {
-        // Set initial x in the range of 5 and 7
+        // Set initial x in the range of column 5 and 7
         return Math.round(5 + 2 * Math.random()); 
     }
 }
 
 // Set y position in the range of row 1 and 3
 function enemyInitialY() {
-    return Math.round((2 * Math.random() + 1));
+    return Math.round(2 * Math.random()) + 1;
 } 
 
 // Set speed in the range of 2 and 4
@@ -42,7 +42,7 @@ var Enemy = function() {
     this.y = enemyInitialY(); 
     // Set the initial speed
     this.speed = randomSpeed() * this.direction; 
-    // The image/sprite for enemy
+    // The sprite for enemy
     this.sprite = 'images/Rock.png'; 
 };
 
@@ -64,6 +64,13 @@ Enemy.prototype.update = function(dt) {
             this.y = enemyInitialY(); 
             this.speed = randomSpeed() * this.direction; 
         }
+        
+        // Detect collision between enemy and player
+        if (Math.round(this.y) == player.y && Math.round(this.x) == player.x) {    
+            lives--;
+            player.x = player.playerInitialX;
+            player.y = player.playerInitialY;
+        }           
     }
 };
 
@@ -95,16 +102,16 @@ Player.prototype.constructor = Player;
 
 // Handles direction key input and change the position of player
 Player.prototype.handleInput = function (input){ 
-    if (input == "up" && this.y > 0){
+    if (input == 'up' && this.y > 0){
         this.y = this.y - 1;
     }
-    if (input == "left" && this.x > 0){
+    if (input == 'left' && this.x > 0){
         this.x = this.x - 1;
     }
-    if (input == "right" && this.x < gameWidth - 1){
+    if (input == 'right' && this.x < gameWidth - 1){
         this.x = this.x + 1;
     }
-    if (input == "down" && this.y < gameHeight - 1){
+    if (input == 'down' && this.y < gameHeight - 1){
         this.y = this.y + 1;
     }
 };
@@ -119,16 +126,6 @@ Player.prototype.update = function() {
         score++;
         this.x = this.playerInitialX;
         this.y = this.playerInitialY;
-    }
-    
-    // Detect collision 
-    for (var enemy in allEnemies){
-        if (Math.round(allEnemies[enemy].y) == this.y && Math.round(allEnemies[enemy].x) == this.x) {    
-            lives--;
-            this.x = this.playerInitialX;
-            this.y = this.playerInitialY;
-            break;
-        }
     }
     
     if(lives == 0) {
@@ -200,7 +197,7 @@ Game.prototype.handleInput = function(key) {
 var Collective = function() {
     // Initialize a collective object using Enemy class
     Enemy.call(this); 
-    // Initially Collective is placed out of canvas
+    // Initially the collective is placed out of canvas
     this.x = -1;
     this.y = -1; 
 };
@@ -211,11 +208,11 @@ Collective.prototype.constructor = Collective;
 
 // Reset x, y position and sprite of the collective
 Collective.prototype.reset = function() {
-    // Set x in the range of 0 to 4
+    // Set x in the range of column 0 to 4
     this.x =  Math.round(4 * Math.random());
-    // Set y in the range of 1 to 3
+    // Set y in the range of row 1 to 3
     this.y = Math.round((2 * Math.random() + 1));
-    
+
     // Set a random image for the Collective
     var randomImage = Math.round(Math.random() * 2) + 1;
     switch(randomImage) {
@@ -262,23 +259,22 @@ document.addEventListener('keyup', function(e) {
 });
 
 
-/* Set a random number of enemies between 4 and 6. Place all enemy objects in allEnemies array.
- * Place all collectives object in allCollectives array.
- * Place the player object in a variable called player.
- * Instantiate game object.
- */
+// Set a random number of enemies between 4 and 6. Place all enemy objects in allEnemies array.
 var numEnemies = Math.round(Math.random()) * 2 + 4;
 var allEnemies = [];
 for (var i = 0; i < numEnemies; i++){ 
     allEnemies.push(new Enemy());
 }
 
+// Set the number of collectives to 2. Place all collectives object in allCollectives array.
 var allCollectives = [];
 var numCollectives = 2;
 for (var i = 0; i < numCollectives; i++) { 
     allCollectives.push(new Collective());
 }
 
+// Instantiate the player object.
 var player = new Player();
 
+// Instantiate the game object.
 var game = new Game(numEnemies, true);

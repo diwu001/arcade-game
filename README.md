@@ -7,7 +7,7 @@ This Arcade Game is developed using JavaScript's object-oriented pseudo-classica
 
 
 
-How to play the game?
+How to play the game
 
 - Start a new game : Press Space Button
 
@@ -18,7 +18,7 @@ How to play the game?
  
  
 Reference
-Udacity Object-Oriented JavaScript Course
-Udacity HTML5 Canvas Course
-Udacity provides art assets and game engine
+- Udacity Object-Oriented JavaScript Course
+- Udacity HTML5 Canvas Course
+- Udacity provides art assets and game engine
 
