@@ -1,3 +1,11 @@
+/* app.js
+ * This file implemets game entities, such as Player, Enemies, Game and Collectives. 
+ * These entities are developed using JavaScript's object-oriented pseudo-classical style. 
+ *
+ * Author: Tina D. Wu
+ * Date: August 31, 2015
+ */
+
 'use strict'; //strict mode
 
 var gameWidth = 5; // width of the game canvas
@@ -5,6 +13,7 @@ var gameHeight = 6; // height of the game canvas
 
 var score = 0; // Set initial value of score
 var lives = 3; // Set initial value of lives
+
 
 // Set x position
 function enemyInitialX(direction) { 
@@ -129,27 +138,22 @@ Player.prototype.update = function() {
     }
     
     if(lives == 0) {
-        player = new Player(); 
+        this.x = this.playerInitialX;
+        this.y = this.playerInitialY;
         game.end();
     }    
 };
 
 
 // Define Game Class 
-var Game = function(enemyNumbers, first) {
-    // first is true if it's the first time for user to play the game
-    this.first = first;
+var Game = function(enemyNumbers) {
+    // first is true if it's the first time for user to play the game.
+    this.first = true;
     
-    /* If it's the first time, game is paused.
-     * If it isn't the first time (Start a new game after previous game is over), set pause to be false
-     */
-    if(first) {
-        this.pause = true;
-    } else {
-        this.pause = false;
-    }
-    
-    // Sets the current state of the game to 'game over'
+    // If it's the first time, game is paused.      
+    this.pause = true;
+        
+    // Sets the current state of the game to 'game over'.
     this.over = false;
     
     // Set the initial score to be 0. Set the initial lives to be 3.
@@ -160,30 +164,34 @@ var Game = function(enemyNumbers, first) {
 
 // If the game ends, the game is paused and the status is game over.
 Game.prototype.end = function() {
-    game.pause = true;
-    game.over = true;
+    this.pause = true;
+    this.over = true;
 };
 
 // Handle "Space" key input.
 Game.prototype.handleInput = function(key) {
     if(key == 'space') {
         // Toggle between pause and unpause.
-        game.pause = !game.pause;
+        this.pause = !this.pause;
         
-        // Set first to be false, if it's not the first time to play the game
-        if (game.first) {
-            game.first = false;
+        // Set first to be false, if it's not the first time to play the game.
+        if (this.first) {
+            this.first = false;
             // Reset collectives to random values
             for (var i = 0; i < numCollectives; i++){ 
                 allCollectives[i].reset();
             }           
         }
         
-        /* If game is over, restart the game and set first to be false. 
-         * It will cause pause to be false, so the game is restarted.
+        /* If game is over, restart the game 
+         * Set pause to be false, so the game is restarted.
          */ 
-        if (game.over) {
-            game = new Game(numEnemies, false);
+        if (this.over) {
+            this.pause = false;
+            this.over = false;
+            score = 0;
+            lives = 3;
+            
             // Reset collectives to random values
             for (var i = 0; i < numCollectives; i++){ 
                 allCollectives[i].reset();
@@ -277,4 +285,4 @@ for (var i = 0; i < numCollectives; i++) {
 var player = new Player();
 
 // Instantiate the game object.
-var game = new Game(numEnemies, true);
+var game = new Game(numEnemies);
