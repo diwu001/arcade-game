@@ -1,8 +1,6 @@
 frontend-nanodegree-arcade-game
 ===============================
 
-Technologies
-
 This Arcade Game is developed using JavaScript's object-oriented pseudo-classical style. Designed and Developed game entities, such as Player, Enemies, Game and Collectives. Implemented game canvas utilizing HTML5 canvas. 
 
 
