@@ -7,6 +7,7 @@ This Arcade Game is developed using JavaScript's object-oriented pseudo-classica
 
 
 
+
 How to play the game
 
 The goal is to gain more scores! Score can be gained from reaching the river successfully. Also score can be gained from collect gems.
@@ -19,6 +20,7 @@ Initially the player has 3 lives. If the player hits a rock, he will lose 1 life
 
 - Pause a game: Press Space Button
 
+ 
  
  
 Reference
